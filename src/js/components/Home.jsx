@@ -1,9 +1,14 @@
-import React from "react";
+import React, { useState } from "react";
 import Navbar from "./Navbar";
 import Card from "./Card";
+import Modal from "./Modal";
 
 const Home = () => {
-  const posts = [
+  // Estado para controlar la vista (grid o list)
+  const [viewMode, setViewMode] = useState("grid");
+
+  // Estado para los posts (ahora es dinámico)
+  const [posts, setPosts] = useState([
     {
       id: 1,
       title: "Beautiful Red Mushroom",
@@ -94,26 +99,82 @@ const Home = () => {
       likes: "525",
       text: "An endangered snowy plover bird resting on the sandy beach",
     },
-  ];
+  ]);
+
+  // Función para agregar un nuevo post
+  const handleAddPost = (newPost) => {
+    // Agregar el nuevo post al inicio del array
+    setPosts([newPost, ...posts]);
+  };
 
   return (
     <>
       <Navbar />
+
+      {/* Modal para Crear Posts */}
+      <Modal onAddPost={handleAddPost} />
+
+      {/* Botones de Cambio de Vista - Centrados */}
       <div className="container mt-4">
-        <div className="row">
-          {posts.map((post, index) => (
-            <div className="col-12 col-md-6 col-lg-4" key={index}>
-              <Card
-                title={post.title}
-                date={post.date}
-                image={post.image}
-                alt={post.alt}
-                likes={post.likes}
-                text={post.text}
-              />
-            </div>
-          ))}
+        <div className="d-flex justify-content-center mb-4">
+          <div className="btn-group" role="group" aria-label="View toggle">
+            <button
+              type="button"
+              className={`btn ${
+                viewMode === "grid" ? "btn-primary" : "btn-outline-secondary"
+              }`}
+              onClick={() => setViewMode("grid")}
+            >
+              <i className="fa-solid fa-table-cells"></i>
+            </button>
+            <button
+              type="button"
+              className={`btn ${
+                viewMode === "list" ? "btn-primary" : "btn-outline-secondary"
+              }`}
+              onClick={() => setViewMode("list")}
+            >
+              <i className="fa-solid fa-square"></i>
+            </button>
+          </div>
         </div>
+
+        {/* Vista Grid */}
+        {viewMode === "grid" && (
+          <div className="row">
+            {posts.map((post, index) => (
+              <div className="col-12 col-md-6 col-lg-4" key={post.id}>
+                <Card
+                  title={post.title}
+                  date={post.date}
+                  image={post.image}
+                  alt={post.alt}
+                  likes={post.likes}
+                  text={post.text}
+                />
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* Vista List */}
+        {viewMode === "list" && (
+          <div className="row justify-content-center">
+            <div className="col-12 col-md-8 col-lg-6">
+              {posts.map((post, index) => (
+                <Card
+                  key={post.id}
+                  title={post.title}
+                  date={post.date}
+                  image={post.image}
+                  alt={post.alt}
+                  likes={post.likes}
+                  text={post.text}
+                />
+              ))}
+            </div>
+          </div>
+        )}
       </div>
     </>
   );
